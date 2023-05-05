@@ -1,0 +1,45 @@
+---
+
+- name: Ensure AnonAddy paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ anonaddy_uid }}"
+    group: "{{ anonaddy_gid }}"
+  with_items:
+    - "{{ anonaddy_base_path }}"
+    - "{{ anonaddy_data_dir_path }}"
+
+- name: Ensure AnonAddy support files created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ anonaddy_base_path }}/{{ item }}"
+    owner: "{{ anonaddy_uid }}"
+    group: "{{ anonaddy_gid }}"
+    mode: 0640
+  with_items:
+    - env
+    - labels
+
+- name: Ensure AnonAddy container image is pulled
+  community.docker.docker_image:
+    name: "{{ anonaddy_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ anonaddy_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else anonaddy_container_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure AnonAddy container network is created
+  community.general.docker_network:
+    name: "{{ anonaddy_container_network }}"
+    driver: bridge
+
+- name: Ensure AnonAddy systemd service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/anonaddy.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ anonaddy_identifier }}.service"
+    mode: 0640

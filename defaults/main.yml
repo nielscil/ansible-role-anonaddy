@@ -19,6 +19,7 @@ anonaddy_hostname: ''
 anonaddy_path_prefix: /
 
 anonaddy_base_path: "/{{ anonaddy_identifier }}"
+anonaddy_data_dir_path: "{{ anonaddy_base_path }}/data"
 
 anonaddy_container_image: "{{ anonaddy_container_image_registry_prefix }}anonaddy/anonaddy:{{ anonaddy_container_image_tag }}"
 anonaddy_container_image_registry_prefix: docker.io/
@@ -41,6 +42,7 @@ anonaddy_container_additional_networks_custom: []
 anonaddy_container_http_bind_port: ''
 anonaddy_container_rspamd_http_bind_port: ''
 anonaddy_container_smtp_bind_port: ''
+anonaddy_container_rspamd_bind_port: ''
 
 # anonaddy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
@@ -96,7 +98,51 @@ anonaddy_container_additional_volumes: []
 # A list of extra arguments to pass to the container
 anonaddy_container_extra_arguments: []
 
-# TODO: env variables here
+anonaddy_timezone: 'UTC'
+anonaddy_listen_ipv6: true
+anonaddy_real_ip_from: '0.0.0.0/32'
+
+anonaddy_name: AnonAddy
+anonaddy_key: '' # "base64:$(openssl rand -base64 32)"
+anonaddy_secret: '' # Long random string used when hashing data for the anonymous replies required
+anonaddy_enable_registration: false
+
+anonaddy_mail_hostname: ''
+anonaddy_domain: ''
+anonaddy_all_domains: "{{ [anonaddy_domain] + anonaddy_additional_domains }}"
+anonaddy_additional_domains: []
+
+anonaddy_limit_email_forward_and_reply: 200
+anonaddy_limit_bandwidth: 104857600
+anonaddy_limit_new_aliases: 10
+anonaddy_limit_additional_username_limit: 10
+
+anonaddy_gpg_signing_key_fingerprint: ''
+anonaddy_dkim_signing_key_path: "/data/dkim/{{ anonaddy_domain }}.private"
+anonaddy_dkim_selector: default
+
+anonaddy_database_username: anonaddy
+anonaddy_database_password: ''
+anonaddy_database_hostname: ''
+anonaddy_database_port: 3306
+anonaddy_database_name: anonaddy
+
+anonaddy_redis_host: ''
+anonaddy_redis_port: ''
+anonaddy_redis_password: ''
+
+anonaddy_mail_from_name: AnonAddy
+anonaddy_mail_from_address: "anonaddy@{{ anonaddy_domain }}"
+anonaddy_mail_encryption: ''
+
+anonaddy_relayhost: ''
+anonaddy_relay_username: ''
+anonaddy_relay_password: ''
+
+anonaddy_spamhaus_dqs_key: ''
+
+anonaddy_rspamd_enabled: false
+anonaddy_rspamd_password: ''
 
 # Additional environment variables.
 anonaddy_environment_variables_additional_variables: ''
@@ -106,9 +152,3 @@ anonaddy_systemd_required_services_list: "{{ anonaddy_systemd_required_systemd_s
 anonaddy_systemd_required_systemd_services_list_default: ['docker.service']
 anonaddy_systemd_required_systemd_services_list_auto: []
 anonaddy_systemd_required_systemd_services_list_custom: []
-
-anonaddy_database_username: anonaddy
-anonaddy_database_password: ''
-anonaddy_database_hostname: ''
-anonaddy_database_port: 5432
-anonaddy_database_name: anonaddy

@@ -1,5 +1,5 @@
 # AnonAddy Ansible role
-This is an [Ansible](https://www.ansible.com/) role which installs [Anonaddy](https://github.com/anonaddy/anonaddy), an anonymous email forwarding application, to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs [AnonAddy](https://github.com/anonaddy/anonaddy), an anonymous email forwarding application, to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
 This role *implicitly* depends on:
 

@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of AnonAddy systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ anonaddy_identifier }}.service"
+  register: anonaddy_service_stat
+
+- when: anonaddy_service_stat.stat.exists | bool
+  block:
+    - name: Ensure AnonAddy systemd service is stopped
+      ansible.builtin.service:
+        name: "{{ anonaddy_identifier }}"
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure AnonAddy systemd service does not exists
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ anonaddy_identifier }}.service"
+        state: absent
+
+    - name: Ensure AnonAddy path doesn't exist
+      ansible.builtin.file:
+        path: "{{ anonaddy_base_path }}"
+        state: absent
