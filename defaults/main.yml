@@ -48,7 +48,6 @@ anonaddy_container_rspamd_http_port: 11334
 anonaddy_container_rspamd_http_bind_port: ''
 anonaddy_container_smtp_port: 25
 anonaddy_container_smtp_bind_port: 25
-anonaddy_container_rspamd_bind_port: ''
 
 # anonaddy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
@@ -65,6 +64,7 @@ anonaddy_container_labels_traefik_entrypoints: web-secure
 anonaddy_container_labels_traefik_tls: "{{ anonaddy_container_labels_traefik_entrypoints != 'web' }}"
 anonaddy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
+anonaddy_container_rspamd_labels_traefik_enabled: "{{ anonaddy_rspamd_enabled }}"
 anonaddy_container_rspamd_labels_hostname: "{{ anonaddy_rspamd_hostname }}"
 anonaddy_container_rspamd_labels_path_prefix: "{{ anonaddy_rspamd_path_prefix }}"
 anonaddy_container_rspamd_labels_rule: "Host(`{{ anonaddy_container_rspamd_labels_hostname }}`){% if anonaddy_container_rspamd_labels_path_prefix != '/' %} && PathPrefix(`{{ anonaddy_container_rspamd_labels_path_prefix }}`){% endif %}"
@@ -113,7 +113,7 @@ anonaddy_container_additional_volumes: []
 anonaddy_container_extra_arguments: []
 
 anonaddy_timezone: 'UTC'
-anonaddy_listen_ipv6: true
+anonaddy_listen_ipv6: false
 anonaddy_real_ip_from: '0.0.0.0/32'
 
 anonaddy_name: AnonAddy
