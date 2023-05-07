@@ -10,7 +10,7 @@ anonaddy_rspamd_identifier: "{{ anonaddy_identifier}}-rspamd"
 anonaddy_uid: ''
 anonaddy_gid: ''
 
-anonaddy_version: 0.14.0-r0
+anonaddy_version: 0.14.0
 
 # The hostname at which anonaddy is served.
 anonaddy_hostname: ''
@@ -117,11 +117,12 @@ anonaddy_listen_ipv6: false
 anonaddy_real_ip_from: '0.0.0.0/32'
 
 anonaddy_name: AnonAddy
+anonaddy_app_url: "https://{{ anonaddy_hostname + anonaddy_path_prefix | trim('/') }}"
 anonaddy_key: '' # "base64:$(openssl rand -base64 32)"
 anonaddy_secret: '' # Long random string used when hashing data for the anonymous replies required
 anonaddy_enable_registration: false
 
-anonaddy_mail_hostname: ''
+anonaddy_mail_hostname: "mail.{{ anonaddy_domain }}"
 anonaddy_domain: ''
 anonaddy_all_domains: "{{ [anonaddy_domain] + anonaddy_additional_domains }}"
 anonaddy_additional_domains: []
@@ -132,7 +133,7 @@ anonaddy_limit_new_aliases: 10
 anonaddy_limit_additional_username_limit: 10
 
 anonaddy_gpg_signing_key_fingerprint: ''
-anonaddy_dkim_signing_key_path: "/data/dkim/{{ anonaddy_domain }}.private"
+anonaddy_dkim_signing_key_path: ''
 anonaddy_dkim_selector: default
 
 anonaddy_database_username: anonaddy
@@ -163,7 +164,7 @@ anonaddy_rspamd_password: ''
 anonaddy_environment_variables_additional_variables: ''
 
 # List of systemd services that anonaddy.service depends on
-anonaddy_systemd_required_services_list: "{{ anonaddy_systemd_required_systemd_services_list_default + anonaddy_systemd_required_systemd_services_list_auto + anonaddy_systemd_required_systemd_services_list_custom }}"
-anonaddy_systemd_required_systemd_services_list_default: ['docker.service']
-anonaddy_systemd_required_systemd_services_list_auto: []
-anonaddy_systemd_required_systemd_services_list_custom: []
+anonaddy_systemd_required_services_list: "{{ anonaddy_systemd_required_services_list_default + anonaddy_systemd_required_services_list_auto + anonaddy_systemd_required_services_list_custom }}"
+anonaddy_systemd_required_services_list_default: ['docker.service']
+anonaddy_systemd_required_services_list_auto: []
+anonaddy_systemd_required_services_list_custom: []

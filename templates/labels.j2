@@ -21,7 +21,7 @@ traefik.http.middlewares.{{ anonaddy_identifier }}-add-response-headers.headers.
 
 traefik.enable=true
 {% endif %}
-traefik.http.routers.{{ anonaddy_identifier }}.rule="{{ anonaddy_container_labels_traefik_rule }}"
+traefik.http.routers.{{ anonaddy_identifier }}.rule={{ anonaddy_container_labels_traefik_rule }}
 {% if anonaddy_container_labels_traefik_priority | int > 0 %}
 traefik.http.routers.{{ anonaddy_identifier }}.priority={{ anonaddy_container_labels_traefik_priority }}
 {% endif %}
@@ -37,7 +37,7 @@ traefik.http.routers.{{ anonaddy_identifier }}.tls.certResolver={{ anonaddy_cont
 traefik.http.services.{{ anonaddy_identifier }}.loadbalancer.server.port={{ anonaddy_container_http_port }}
 
 {% if anonaddy_container_rspamd_labels_traefik_enabled %}
-traefik.http.routers.{{ anonaddy_rspamd_identifier }}.rule="{{ anonaddy_container_rspamd_labels_rule }}"
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.rule={{ anonaddy_container_rspamd_labels_rule }}
 {% if anonaddy_container_rspamd_labels_priority | int > 0 %}
 traefik.http.routers.{{ anonaddy_rspamd_identifier }}.priority={{ anonaddy_container_rspamd_labels_priority }}
 {% endif %}

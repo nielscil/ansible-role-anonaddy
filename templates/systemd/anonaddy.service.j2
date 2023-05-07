@@ -1,6 +1,6 @@
 [Unit]
 Description=AnonAddy ({{ anonaddy_identifier }})
-{% for service in anonaddy_systemd_required_systemd_services_list %}
+{% for service in anonaddy_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
@@ -19,16 +19,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--network={{ anonaddy_container_network }} \
 			--user={{ anonaddy_uid }}:{{ anonaddy_gid }} \
 			--cap-drop=ALL \
-			--read-only \
 			--hostname={{ anonaddy_hostname }} \
-			{% if anonaddy_http_bind_port != '' %}
-			-p {{ anonaddy_http_bind_port }}:{{ anonaddy_http_port }} \
+			{% if anonaddy_container_http_bind_port != '' %}
+			-p {{ anonaddy_container_http_bind_port }}:{{ anonaddy_container_http_port }} \
 			{% endif %}
 			{% if anonaddy_container_smtp_bind_port != '' %}
 			-p {{ anonaddy_container_smtp_bind_port }}:{{ anonaddy_container_smtp_port }} \
 			{% endif %}
-			{% if anonaddy_container_rspamd_bind_port != '' %}
-			-p {{ anonaddy_container_rspamd_bind_port }}:{{ anonaddy_container_rspamd_port }} \
+			{% if anonaddy_container_rspamd_http_bind_port != '' %}
+			-p {{ anonaddy_container_rspamd_http_bind_port }}:{{ anonaddy_container_rspamd_http_port }} \
 			{% endif %}
 			--env-file={{ anonaddy_base_path }}/env \
 			--label-file={{ anonaddy_base_path }}/labels \
