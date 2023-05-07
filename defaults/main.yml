@@ -5,6 +5,7 @@
 anonaddy_enabled: true
 
 anonaddy_identifier: anonaddy
+anonaddy_rspamd_identifier: "{{ anonaddy_identifier}}-rspamd"
 
 anonaddy_uid: ''
 anonaddy_gid: ''
@@ -13,10 +14,12 @@ anonaddy_version: 0.14.0-r0
 
 # The hostname at which anonaddy is served.
 anonaddy_hostname: ''
+anonaddy_rspamd_hostname: ''
 
 # The path at which anonaddy is served.
 # This value must either be `/` or not end with a slash (e.g. `/anonaddy`).
 anonaddy_path_prefix: /
+anonaddy_rspamd_path_prefix: /
 
 anonaddy_base_path: "/{{ anonaddy_identifier }}"
 anonaddy_data_dir_path: "{{ anonaddy_base_path }}/data"
@@ -39,9 +42,12 @@ anonaddy_container_additional_networks_custom: []
 # Specifies how the container publishes its HTTP port
 #
 # Takes an "<ip>:<port>" value (e.g. "127.0.0.1:8000"), just a port number or an empty string to not expose.
+anonaddy_container_http_port: 8000
 anonaddy_container_http_bind_port: ''
+anonaddy_container_rspamd_http_port: 11334
 anonaddy_container_rspamd_http_bind_port: ''
-anonaddy_container_smtp_bind_port: ''
+anonaddy_container_smtp_port: 25
+anonaddy_container_smtp_bind_port: 25
 anonaddy_container_rspamd_bind_port: ''
 
 # anonaddy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
@@ -58,6 +64,14 @@ anonaddy_container_labels_traefik_priority: 0
 anonaddy_container_labels_traefik_entrypoints: web-secure
 anonaddy_container_labels_traefik_tls: "{{ anonaddy_container_labels_traefik_entrypoints != 'web' }}"
 anonaddy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+anonaddy_container_rspamd_labels_hostname: "{{ anonaddy_rspamd_hostname }}"
+anonaddy_container_rspamd_labels_path_prefix: "{{ anonaddy_rspamd_path_prefix }}"
+anonaddy_container_rspamd_labels_rule: "Host(`{{ anonaddy_container_rspamd_labels_hostname }}`){% if anonaddy_container_rspamd_labels_path_prefix != '/' %} && PathPrefix(`{{ anonaddy_container_rspamd_labels_path_prefix }}`){% endif %}"
+anonaddy_container_rspamd_labels_priority: 0
+anonaddy_container_rspamd_labels_traefik_entrypoints: web-secure
+anonaddy_container_rspamd_labels_tls: "{{ anonaddy_container_rspamd_labels_traefik_entrypoints != 'web' }}"
+anonaddy_container_rspamd_labels_tls_certResolver: default
 
 # Controls which additional headers to attach to all HTTP requests.
 # To add your own custom request headers, use `anonaddy_container_labels_traefik_additional_response_headers_custom`
@@ -128,7 +142,7 @@ anonaddy_database_port: 3306
 anonaddy_database_name: anonaddy
 
 anonaddy_redis_host: ''
-anonaddy_redis_port: ''
+anonaddy_redis_port: 6379
 anonaddy_redis_password: ''
 
 anonaddy_mail_from_name: AnonAddy
@@ -136,6 +150,7 @@ anonaddy_mail_from_address: "anonaddy@{{ anonaddy_domain }}"
 anonaddy_mail_encryption: ''
 
 anonaddy_relayhost: ''
+anonaddy_relayport: ''
 anonaddy_relay_username: ''
 anonaddy_relay_password: ''
 

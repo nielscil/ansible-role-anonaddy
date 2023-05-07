@@ -22,13 +22,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--hostname={{ anonaddy_hostname }} \
 			{% if anonaddy_http_bind_port != '' %}
-			-p {{ anonaddy_http_bind_port }}:8080 \
+			-p {{ anonaddy_http_bind_port }}:{{ anonaddy_http_port }} \
 			{% endif %}
 			{% if anonaddy_container_smtp_bind_port != '' %}
-			-p {{ anonaddy_container_smtp_bind_port }}:25 \
+			-p {{ anonaddy_container_smtp_bind_port }}:{{ anonaddy_container_smtp_port }} \
 			{% endif %}
 			{% if anonaddy_container_rspamd_bind_port != '' %}
-			-p {{ anonaddy_container_rspamd_bind_port }}:11334 \
+			-p {{ anonaddy_container_rspamd_bind_port }}:{{ anonaddy_container_rspamd_port }} \
 			{% endif %}
 			--env-file={{ anonaddy_base_path }}/env \
 			--label-file={{ anonaddy_base_path }}/labels \

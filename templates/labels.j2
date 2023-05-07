@@ -7,33 +7,48 @@ traefik.docker.network={{ anonaddy_container_labels_traefik_docker_network }}
 
 {% if anonaddy_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
 {% for name, value in anonaddy_container_labels_traefik_additional_request_headers.items() %}
-traefik.http.middlewares.{{ anonaddy_server_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+traefik.http.middlewares.{{ anonaddy_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + [anonaddy_server_identifier + '-add-request-headers'] %}
+{% set middlewares = middlewares + [anonaddy_identifier + '-add-request-headers'] %}
 {% endif %}
 
 {% if anonaddy_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in anonaddy_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.{{ anonaddy_server_identifier }}-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
+traefik.http.middlewares.{{ anonaddy_identifier }}-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + [anonaddy_server_identifier + '-add-response-headers'] %}
+{% set middlewares = middlewares + [anonaddy_identifier + '-add-response-headers'] %}
 {% endif %}
 
 traefik.enable=true
 {% endif %}
-traefik.http.routers.{{ anonaddy_server_identifier }}.rule=Host("{{ anonaddy_hostname }}")
+traefik.http.routers.{{ anonaddy_identifier }}.rule="{{ anonaddy_container_labels_traefik_rule }}"
 {% if anonaddy_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.{{ anonaddy_server_identifier }}.priority={{ anonaddy_container_labels_traefik_priority }}
+traefik.http.routers.{{ anonaddy_identifier }}.priority={{ anonaddy_container_labels_traefik_priority }}
 {% endif %}
 {% if middlewares | length > 0 %}
-traefik.http.routers.{{ anonaddy_server_identifier }}.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.{{ anonaddy_identifier }}.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.{{ authentik_server_identifier }}.service={{ authentik_server_identifier }}
-traefik.http.routers.{{ authentik_server_identifier }}.entrypoints={{ authentik_container_labels_traefik_entrypoints }}
-traefik.http.routers.{{ authentik_server_identifier }}.tls={{ authentik_container_labels_traefik_tls | to_json }}
-{% if authentik_container_labels_traefik_tls %}
-traefik.http.routers.{{ authentik_server_identifier }}.tls.certResolver={{ authentik_container_labels_traefik_tls_certResolver }}
+traefik.http.routers.{{ anonaddy_identifier }}.service={{ anonaddy_identifier }}
+traefik.http.routers.{{ anonaddy_identifier }}.entrypoints={{ anonaddy_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ anonaddy_identifier }}.tls={{ anonaddy_container_labels_traefik_tls | to_json }}
+{% if anonaddy_container_labels_traefik_tls %}
+traefik.http.routers.{{ anonaddy_identifier }}.tls.certResolver={{ anonaddy_container_labels_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.{{ authentik_server_identifier }}.loadbalancer.server.port={{ authentik_container_http_port }}
+traefik.http.services.{{ anonaddy_identifier }}.loadbalancer.server.port={{ anonaddy_container_http_port }}
 
-{{ authentik_container_labels_additional_labels }}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.rule="{{ anonaddy_container_rspamd_labels_rule }}"
+{% if anonaddy_container_rspamd_labels_priority | int > 0 %}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.priority={{ anonaddy_container_rspamd_labels_priority }}
+{% endif %}
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.service={{ anonaddy_identifier }}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.entrypoints={{ anonaddy_container_rspamd_labels_traefik_entrypoints }}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.tls={{ anonaddy_container_rspamd_labels_tls | to_json }}
+{% if anonaddy_container_rspamd_labels_tls %}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.tls.certResolver={{ anonaddy_container_rspamd_labels_tls_certResolver }}
+{% endif %}
+traefik.http.services.{{ anonaddy_rspamd_identifier }}.loadbalancer.server.port={{ anonaddy_container_rspamd_http_port }}
+
+{{ anonaddy_container_labels_additional_labels }}
