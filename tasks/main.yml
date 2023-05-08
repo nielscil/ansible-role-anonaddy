@@ -11,6 +11,12 @@
     - setup-anonaddy
     - install-all
     - install-anonaddy
+    
+- block:
+    - when: anonaddy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_dkim.yml"
+  tags:
+    - install-anonaddy-dkim
 
 - block:
     - when: not anonaddy_enabled | bool

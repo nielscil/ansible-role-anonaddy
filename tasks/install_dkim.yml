@@ -1,0 +1,29 @@
+---
+
+- name: Generate DKIM keypair
+  ansible.builtin.shell:
+    cmd: "docker exec {{ anonaddy_identifier }} gen-dkim"
+  failed_when: false
+  register: dkim_generate_result
+
+- name: Fail if Generate DKIM keypair failed
+  ansible.builtin.fail:
+    msg: "Generate DKIM keypair failed. Full error: {{ dkim_generate_result }}"
+  when: "dkim_generate_result.rc != 0 and dkim_generate_result.stdout | regex_search('ERROR:.*') is not none"
+  
+- name: Try extracting DKIM public key path
+  ansible.builtin.fail:
+    msg: "Cannot extract DKIM public key path"
+  when: "dkim_generate_result.stdout | regex_search('generating DNS TXT record with public key and storing it in (?P<dkim_path>.*)*', multiline=True) is none"
+  
+- name: Try extracting DKIM public key path
+  ansible.builtin.shell:
+    cmd: "cat {{ dkim_generate_result.stdout | regex_search('generating DNS TXT record with public key and storing it in (?P<dkim_path>.*)*', multiline=True, '\\g<dkim_path>') | first }}"
+  failed_when: false
+  register: dkim_public_key_result
+  
+- name: Print DKIM public key
+  ansible.builtin.debug:
+    msg: >-
+      Add the following DKIM key to your DNS for the domain '`{{ dkim_generate_result.stdout | regex_search('\/data\/dkim\/(?P<dkim_url>.*).txt', multiline=True, '\\g<dkim_path>') | first }}`': 
+      `{{ dkim_public_key_result }}`
