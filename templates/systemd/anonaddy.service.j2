@@ -17,8 +17,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--name={{ anonaddy_identifier }} \
 			--log-driver=none \
 			--network={{ anonaddy_container_network }} \
-			--user={{ anonaddy_uid }}:{{ anonaddy_gid }} \
-			--cap-drop=ALL \
 			--hostname={{ anonaddy_hostname }} \
 			{% if anonaddy_container_http_bind_port != '' %}
 			-p {{ anonaddy_container_http_bind_port }}:{{ anonaddy_container_http_port }} \
