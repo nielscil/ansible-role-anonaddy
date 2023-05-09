@@ -37,12 +37,22 @@
           anonaddy_container_labels_traefik_path_prefix (`{{ anonaddy_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/anonaddy`).
       when: "anonaddy_container_labels_traefik_path_prefix != '/' and anonaddy_container_labels_traefik_path_prefix[-1] == '/'"
       
+- when: anonaddy_rspamd_enabled | bool
+  block:      
+    - name: Fail if required AnonAddy RSPAMD settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) for using RSPAMD with this role.
+      when: "vars[item] == ''"
+      with_items:
+        - anonaddy_dkim_signing_key_path
+   
 - when: anonaddy_container_rspamd_labels_traefik_enabled | bool
   block:
     - name: Fail if required AnonAddy RSPAMD settings not defined
       ansible.builtin.fail:
         msg: >-
-          You need to define a required configuration setting (`{{ item }}`) for using this role.
+          You need to define a required configuration setting (`{{ item }}`) for using RSPAMD with this role.
       when: "vars[item] == ''"
       with_items:
         - anonaddy_rspamd_hostname
