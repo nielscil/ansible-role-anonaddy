@@ -44,7 +44,7 @@ traefik.http.routers.{{ anonaddy_rspamd_identifier }}.priority={{ anonaddy_conta
 {% if middlewares | length > 0 %}
 traefik.http.routers.{{ anonaddy_rspamd_identifier }}.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.{{ anonaddy_rspamd_identifier }}.service={{ anonaddy_identifier }}
+traefik.http.routers.{{ anonaddy_rspamd_identifier }}.service={{ anonaddy_rspamd_identifier }}
 traefik.http.routers.{{ anonaddy_rspamd_identifier }}.entrypoints={{ anonaddy_container_rspamd_labels_traefik_entrypoints }}
 traefik.http.routers.{{ anonaddy_rspamd_identifier }}.tls={{ anonaddy_container_rspamd_labels_tls | to_json }}
 {% if anonaddy_container_rspamd_labels_tls %}
