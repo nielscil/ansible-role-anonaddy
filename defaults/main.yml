@@ -19,6 +19,9 @@ anonaddy_rspamd_hostname: ''
 # The path at which anonaddy is served.
 # This value must either be `/` or not end with a slash (e.g. `/anonaddy`).
 anonaddy_path_prefix: /
+
+# The path at which RSPAMD for anonaddy is served.
+# This value must  be `/` because it only works on `anonaddy_rspamd_hostname`
 anonaddy_rspamd_path_prefix: /
 
 anonaddy_base_path: "/{{ anonaddy_identifier }}"
