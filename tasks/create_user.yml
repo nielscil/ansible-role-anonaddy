@@ -1,0 +1,25 @@
+---
+
+- name: Fail if required AnonAddy settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using this role.
+  when: "vars[item] == ''"
+  with_items:
+    - anonaddy_user_username
+    - anonaddy_user_mail
+
+- name: Generate user
+  ansible.builtin.shell:
+    cmd: "docker exec {{ anonaddy_identifier }} anonaddy anonaddy:create-user \"{{ anonaddy_user_username }}\" \"{{ anonaddy_user_mail }}\""
+  failed_when: false
+  register: generate_user_result
+
+- name: Fail if Generate user failed
+  ansible.builtin.fail:
+    msg: "Generate user failed. Full error: {{ generate_user_result }}"
+  when: "generate_user_result.rc != 0 and generate_user_result.stdout == 'The username has already been taken.'"
+
+- name: Print user details
+  ansible.builtin.debug:
+    msg: "{{ generate_user_result.stdout }}"

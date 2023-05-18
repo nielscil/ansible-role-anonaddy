@@ -171,3 +171,8 @@ anonaddy_systemd_required_services_list: "{{ anonaddy_systemd_required_services_
 anonaddy_systemd_required_services_list_default: ['docker.service']
 anonaddy_systemd_required_services_list_auto: []
 anonaddy_systemd_required_services_list_custom: []
+
+# User creation
+
+anonaddy_user_username: ''
+anonaddy_user_mail: ''
