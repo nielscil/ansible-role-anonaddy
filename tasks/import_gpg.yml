@@ -1,0 +1,35 @@
+---
+
+- block:      
+    - name: Fail if required AnonAddy settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) for using GPG with this role.
+      when: "vars[item] == ''"
+      with_items:
+        - anonaddy_gpg_signing_key
+        - anonaddy_gpg_signing_key_fingerprint
+
+- name: Ensure GPG private key is installed
+  ansible.builtin.copy:
+    content: "{{ anonaddy_gpg_signing_key }}"
+    dest: "{{ anonaddy_data_dir_path }}/gpg_signing_key.key"
+    owner: "{{ anonaddy_uid }}"
+    group: "{{ anonaddy_gid }}"
+    mode: 0640
+
+- name: Import GPG private key
+  ansible.builtin.shell:
+    cmd: "docker exec --user anonaddy {{ anonaddy_identifier }} gpg --batch --import /data/gpg_signing_key.key"
+  failed_when: false
+  register: gpg_import_result
+
+- name: Fail if Import GPG private key failed
+  ansible.builtin.fail:
+    msg: "Import GPG private key failed. Full error: {{ gpg_import_result }}"
+  when: "gpg_import_result.stdout | regex_search('secret keys read: 1', multiline=True) is none and gpg_import_result.stderr | regex_search('secret keys read: 1', multiline=True) is none "
+
+- name: Print Import GPG private key succeeded
+  ansible.builtin.debug:
+    msg: >-
+      Import GPG private key succeeded, please restart the services using --tags=start

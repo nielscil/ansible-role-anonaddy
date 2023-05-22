@@ -135,7 +135,9 @@ anonaddy_limit_bandwidth: 104857600
 anonaddy_limit_new_aliases: 10
 anonaddy_limit_additional_username_limit: 10
 
+anonaddy_gpg_signing_key: ''
 anonaddy_gpg_signing_key_fingerprint: ''
+
 anonaddy_dkim_signing_key_path: ''
 anonaddy_dkim_selector: default
 
@@ -173,6 +175,5 @@ anonaddy_systemd_required_services_list_auto: []
 anonaddy_systemd_required_services_list_custom: []
 
 # User creation
-
 anonaddy_user_username: ''
 anonaddy_user_mail: ''

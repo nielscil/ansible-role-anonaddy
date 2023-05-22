@@ -20,6 +20,12 @@
 
 - block:
     - when: anonaddy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/import_gpg.yml"
+  tags:
+    - import-anonaddy-gpg
+
+- block:
+    - when: anonaddy_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/create_user.yml"
   tags:
     - create-anonaddy-user
