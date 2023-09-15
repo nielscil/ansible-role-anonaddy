@@ -10,7 +10,7 @@ anonaddy_rspamd_identifier: "{{ anonaddy_identifier}}-rspamd"
 anonaddy_uid: ''
 anonaddy_gid: ''
 
-anonaddy_version: 0.14.1-r0
+anonaddy_version: 0.14.1-r2
 
 # The hostname at which anonaddy is served.
 anonaddy_hostname: ''
