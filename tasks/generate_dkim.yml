@@ -1,0 +1,44 @@
+---
+
+- block:      
+    - name: Fail if required AnonAddy settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) for generating DKIM keypair with this role.
+      when: "vars[item] == ''"
+      with_items:
+        - anonaddy_domain
+        - anonaddy_container_image
+
+- name: Generate DKIM keypair
+  ansible.builtin.shell:
+    cmd: "docker run --rm -it --entrypoint '/bin/sh' -e ANONADDY_DOMAIN={{ anonaddy_domain }} {{ anonaddy_container_image }} -c '/usr/local/bin/gen-dkim && cat /data/dkim/{{ anonaddy_domain }}.private'"
+  failed_when: false
+  register: dkim_generate_result
+
+- name: Fail if Generate DKIM keypair failed
+  ansible.builtin.fail:
+    msg: "Generate DKIM keypair failed. Full error: {{ dkim_generate_result }}"
+  when: "dkim_generate_result.rc != 0 and dkim_generate_result.stderr != ''"
+
+- name: Fail if extracting DKIM from output failed
+  ansible.builtin.fail:
+    msg: "Cannot extract DKIM from output"
+  when: "dkim_generate_result.stdout | regex_search('(default\\._domainkey [\\s\\S]*)(-----BEGIN PRIVATE KEY[\\s\\S]*)', multiline=True) is none"
+
+- name: Extract DKIM data from output
+  set_fact:
+    dkim_public_key_result: "{{ dkim_generate_result.stdout | regex_search('(default\\._domainkey [\\s\\S]*)(-----BEGIN PRIVATE KEY[\\s\\S]*)', '\\1', multiline=True) | first }}"
+    dkim_private_key_result: "{{ dkim_generate_result.stdout | regex_search('(default\\._domainkey [\\s\\S]*)(-----BEGIN PRIVATE KEY[\\s\\S]*)', '\\2', multiline=True) | first }}"
+  
+- name: Print DKIM public key
+  ansible.builtin.debug:
+    msg: |-
+      Add the following DKIM key to your DNS for the domain `{{ anonaddy_domain }}`: {{ dkim_public_key_result | regex_replace('(\"\s*\")|(\n)', '', multiline=True) | regex_replace('\"', '`', multiline=True) |  regex_replace('`\r', '`', multiline=True) }}
+
+- name: Print DKIM private key
+  pause:
+    prompt: |
+      Add the following variable to your host vars and and re-run install-anonaddy. `anonaddy_dkim_signing_key` with:
+      {{ dkim_private_key_result }}
+      

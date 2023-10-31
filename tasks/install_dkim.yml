@@ -1,40 +1,19 @@
 ---
 
-- name: Generate DKIM keypair
-  ansible.builtin.shell:
-    cmd: "docker exec {{ anonaddy_identifier }} gen-dkim"
-  failed_when: false
-  register: dkim_generate_result
+- name: Ensure DKIM path exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ anonaddy_uid }}"
+    group: "{{ anonaddy_gid }}"
+  with_items:
+    - "{{ anonaddy_data_dir_path }}/dkim"
 
-- name: Fail if Generate DKIM keypair failed
-  ansible.builtin.fail:
-    msg: "Generate DKIM keypair failed. Full error: {{ dkim_generate_result }}"
-  when: "dkim_generate_result.rc != 0 and dkim_generate_result.stderr != ''"
-
-- name: Fail if extracting DKIM public key path failed
-  ansible.builtin.fail:
-    msg: "Cannot extract DKIM public key path"
-  when: "dkim_generate_result.stdout | regex_search('generating DNS TXT record with public key and storing it in (?P<dkim_path>.*)', multiline=True) is none"
-
-- name: Extract DKIM public key data
-  set_fact:
-    dkim_public_key_path_result: "{{ dkim_generate_result.stdout | regex_search('generating DNS TXT record with public key and storing it in (.*)', '\\1', multiline=True) | first }}"
-    dkim_public_key_name_result: "{{ dkim_generate_result.stdout | regex_search('generating DNS TXT record with public key and storing it in \/data\/dkim\/(.*).txt', '\\1', multiline=True) | first }}"
-    dkim_private_key_name_result: "{{ dkim_generate_result.stdout | regex_search('generating private and storing in (.*)', '\\1', multiline=True) | first }}"
-  
-- name: Extract DKIM public key content
-  ansible.builtin.slurp:
-    src: "{{ anonaddy_base_path }}/{{ dkim_public_key_path_result }}"
-  register: dkim_public_key_content_result
-
-- name: Print DKIM public key
-  ansible.builtin.debug:
-    msg: >-
-      Add the following DKIM key to your DNS for the domain `{{ dkim_public_key_name_result }}`:
-      {{ dkim_public_key_content_result['content'] | b64decode | regex_replace('(\"\s*\")|(\n)', '', multiline=True) | regex_replace('\"', '`', multiline=True) }}
-
-
-- name: Print ansible DKIM host variable
-  ansible.builtin.debug:
-    msg: >-
-      Add the following variable to your host vars: `anonaddy_dkim_signing_key_path`: `{{ dkim_private_key_name_result }}` and re-run install-anonaddy
+- name: Ensure DKIM private key is installed
+  ansible.builtin.copy:
+    content: "{{ anonaddy_dkim_signing_key }}"
+    dest: "{{ anonaddy_data_dir_path }}/dkim/{{ anonaddy_domain }}.private"
+    owner: "{{ anonaddy_uid }}"
+    group: "{{ anonaddy_gid }}"
+    mode: 0640

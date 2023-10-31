@@ -6,17 +6,20 @@
 
     - when: anonaddy_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+    - when: anonaddy_enabled | bool and anonaddy_dkim_signing_key != ''
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_dkim.yml"
   tags:
     - setup-all
     - setup-anonaddy
     - install-all
     - install-anonaddy
-    
+
 - block:
     - when: anonaddy_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_dkim.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/generate_dkim.yml"
   tags:
-    - install-anonaddy-dkim
+    - generate-anonaddy-dkim
 
 - block:
     - when: anonaddy_enabled | bool

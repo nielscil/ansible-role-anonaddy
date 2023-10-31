@@ -138,7 +138,7 @@ anonaddy_limit_additional_username_limit: 10
 anonaddy_gpg_signing_key: ''
 anonaddy_gpg_signing_key_fingerprint: ''
 
-anonaddy_dkim_signing_key_path: ''
+anonaddy_dkim_signing_key: ''
 anonaddy_dkim_selector: default
 
 anonaddy_database_username: anonaddy
